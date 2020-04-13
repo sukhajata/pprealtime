@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package realtime;
+
+// Realtime service def
+service RealtimeService {
+    //Remote Procedure Calls
+    /*
+        GetLatest
+        returns only latest values from cache then closes.
+    */
+    rpc GetLatest (RouteRequest) returns (stream RouteResponse) {}
+    /*
+        GetStreaming
+        returns any new values in a stream, remains open.
+    */
+    rpc GetStreaming (RouteRequest) returns (stream RouteResponse) {}
+    /*
+        GetLatestStreaming
+        returns latest values from cache, and any new values, remains open.
+    */
+    rpc GetLatestStreaming (RouteRequest) returns (stream RouteResponse) {}
+}
+  
+message RouteRequest {
+    string route = 1; //use routes documented on the realtime-service's /routes page.
+}
+  
+// A response message containing a greeting
+message RouteResponse {
+    map<string,string> data = 1;
+    bool fromCache = 2; //true if data is from cache, false if data is a new row
+    int32 cachedDataRemaining = 3; //an integer counting how many more cached rows to expect after this one.
+    //cachedDataRemaining will only be included for messages with fromCache = true
+}
